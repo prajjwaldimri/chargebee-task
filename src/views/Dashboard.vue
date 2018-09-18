@@ -8,7 +8,7 @@
           v-list-tile-content
             v-list-tile-title All Events
 
-        v-list-tile(@click="")
+        v-list-tile(@click="$router.push('myEvents')")
           v-list-tile-action
             v-icon event
           v-list-tile-content
@@ -24,7 +24,8 @@
 
     v-content
       v-container(fluid)
-        router-view
+        transition(name="fade-transition" mode="out-in" appear)
+          router-view
 
 
 </template>
