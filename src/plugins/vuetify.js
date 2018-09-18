@@ -7,8 +7,10 @@ import {
   VList,
   VBtn,
   VIcon,
+  VCard,
   VGrid,
   VToolbar,
+  VTabs,
   transitions,
 } from 'vuetify';
 import 'vuetify/src/stylus/app.styl';
@@ -19,10 +21,12 @@ Vue.use(Vuetify, {
     VNavigationDrawer,
     VFooter,
     VList,
+    VCard,
     VBtn,
     VIcon,
     VGrid,
     VToolbar,
+    VTabs,
     transitions,
   },
 });
