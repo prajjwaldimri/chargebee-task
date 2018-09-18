@@ -1,7 +1,7 @@
 <template lang="pug">
   v-app
     v-navigation-drawer(dark permanent clipped app)
-      v-list
+      v-list(two-line)
         v-list-tile(@click="$router.push('myEvents')")
           v-list-tile-action
             v-icon event
@@ -13,6 +13,12 @@
             v-icon event_note
           v-list-tile-content
             v-list-tile-title All Events
+
+        v-list-tile(@click="$router.push('notifications')")
+          v-list-tile-action
+            v-icon notifications
+          v-list-tile-content
+            v-list-tile-title Notifications
 
     v-toolbar(dark prominent app fixed).pl-0
       v-toolbar-side-icon

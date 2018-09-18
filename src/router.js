@@ -29,6 +29,12 @@ export default new Router({
           name: 'allEvents',
           component: () => import(/* webpackChunkName: "allEvents" */ './components/AllEvents.vue'),
         },
+        {
+          path: 'notifications',
+          name: 'notifications',
+          component: () =>
+            import(/* webpackChunkName: "notifications" */ './components/Notifications.vue'),
+        },
       ],
     },
   ],

@@ -42,7 +42,7 @@
           v-card-actions
             v-spacer
             v-btn(color="success" @click="register(event.participants[0], event.id)"
-             v-if="!event.participants.indexOf(currentUser) > 0")
+             v-if="event.participants.indexOf(currentUser) < 0")
               | Register For Event
             v-btn(disabled v-else) Already Registered
 </template>
