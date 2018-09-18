@@ -1,7 +1,8 @@
 <template lang="pug">
   v-app
     v-snackbar(v-model="snackbar" top :color="snackbarColor" :timeout="2000") {{snackbarMessage}}
-    router-view
+    transition(name="fade-transition" mode="out-in")
+      router-view
 </template>
 
 <script>

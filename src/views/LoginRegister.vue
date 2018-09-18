@@ -55,7 +55,7 @@ export default {
             // Should use bcrypt here
             if (this.password === dbPass) {
               this.$cookies.set('authenticatedUser', this.email);
-              this.$router.push('dashboard');
+              this.$router.push('/dashboard/myEvents');
             } else {
               EventBus.$emit('show-error-snack', 'Wrong username or password');
             }
@@ -72,7 +72,7 @@ export default {
             // Simulating cookies as remote Database
             this.$cookies.set(this.email, this.password);
             this.$cookies.set('authenticatedUser', this.email);
-            this.$router.push('dashboard');
+            this.$router.push('/dashboard/myEvents');
           } else {
             EventBus.$emit('show-error-snack', 'Account already exists!');
           }
