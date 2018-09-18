@@ -51,10 +51,10 @@ export default {
       this.$validator.validateAll().then((result) => {
         if (result) {
           if (this.$cookies.get(this.email)) {
-            const dbPass = this.$cookies.get(this.email);
+            const dbPass = this.$cookies.get(this.email).password;
             // Should use bcrypt here
             if (this.password === dbPass) {
-              this.$cookies.set('authenticatedUser', this.email);
+              this.$session.set('authenticatedUser', this.email);
               this.$router.push('/dashboard/myEvents');
             } else {
               EventBus.$emit('show-error-snack', 'Wrong username or password');
@@ -71,7 +71,15 @@ export default {
           if (!this.$cookies.get(this.email)) {
             // Simulating cookies as remote Database
             this.$cookies.set(this.email, JSON.stringify({ password: this.password }));
-            this.$cookies.set('authenticatedUser', this.email);
+            // Add all users to an array
+            let users = JSON.parse(this.$cookies.get('users'));
+            if (!users) {
+              users = [];
+            }
+            console.log(typeof users);
+            users.push(this.email);
+            this.$cookies.set('users', JSON.stringify(users));
+            this.$session.set('authenticatedUser', this.email);
             this.$router.push('/dashboard/myEvents');
           } else {
             EventBus.$emit('show-error-snack', 'Account already exists!');

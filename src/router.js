@@ -24,8 +24,12 @@ export default new Router({
           name: 'myEvents',
           component: MyEvents,
         },
+        {
+          path: 'allEvents',
+          name: 'allEvents',
+          component: () => import(/* webpackChunkName: "allEvents" */ './components/AllEvents.vue'),
+        },
       ],
-      // component: () => import(/* webpackChunkName: "dashboard" */ './views/Dashboard.vue'),
     },
   ],
 });

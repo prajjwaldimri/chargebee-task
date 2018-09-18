@@ -70,7 +70,7 @@ export default {
     };
   },
   mounted() {
-    this.email = this.$cookies.get('authenticatedUser');
+    this.email = this.$session.get('authenticatedUser');
     EventBus.$on('show-add-dialog', () => {
       this.dialog = true;
     });
@@ -89,6 +89,8 @@ export default {
             tags: this.tags,
             maxParticipants: this.maxParticipants,
             fieldsRequired: this.fieldsRequired,
+            participants: [this.email],
+            creator: this.email,
           };
           const user = this.$cookies.get(this.email);
           if (!user.events) {
@@ -97,6 +99,7 @@ export default {
           user.events.push(event);
           this.$cookies.set(this.email, JSON.stringify(user));
           EventBus.$emit('show-success-snack', 'Event Added!');
+          EventBus.$emit('update-my-events');
           this.dialog = false;
         }
       });

@@ -70,7 +70,7 @@ export default {
     };
   },
   mounted() {
-    this.email = this.$cookies.get('authenticatedUser');
+    this.email = this.$session.get('authenticatedUser');
     EventBus.$on('show-edit-dialog', (event) => {
       this.dialog = true;
       this.id = event.id;

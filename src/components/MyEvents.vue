@@ -8,12 +8,14 @@
         v-spacer
         v-btn(color="primary" dark @click="addItem").mb-2 Add New Event
 
-      v-data-table(:items="user.events" :headers="headers" :loading="loading").elevation-1
+      v-data-table(:items="user.events" :headers="headers" :loading="loading"
+      v-if="user").elevation-1
         v-progress-linear(slot="progress" color="blue" indeterminate)
         template(slot="items" slot-scope="props")
           td.justify-center.layout.px-0
             v-icon(small @click="editItem(props.item)").mr-2 edit
             v-icon(small @click="deleteItem(props.item.id)") delete
+          td {{props.item.participants}}
           td {{props.item.eventName}}
           td {{props.item.description}}
           td {{props.item.duration}}
@@ -42,6 +44,7 @@ export default {
       user: {},
       headers: [
         { text: 'Actions', value: 'action', sortable: false },
+        { text: 'Participants', value: 'participants' },
         { text: 'Event Name', value: 'eventName' },
         { text: 'Description', value: 'description' },
         { text: 'Duration', value: 'duration' },
@@ -72,7 +75,7 @@ export default {
     },
     getEvents() {
       this.loading = true;
-      this.email = this.$cookies.get('authenticatedUser');
+      this.email = this.$session.get('authenticatedUser');
       // Loads events from cookies
       this.user = this.$cookies.get(this.email);
       this.loading = false;
