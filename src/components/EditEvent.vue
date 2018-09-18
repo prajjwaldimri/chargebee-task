@@ -1,7 +1,7 @@
 <template lang="pug">
   v-dialog(v-model="dialog" width="500" persistent)
     v-card
-      v-card-title.headline(primary-title).blue.white--text Add an Event
+      v-card-title.headline(primary-title).blue.white--text Edit Event
       v-card-text
         form
           v-text-field(v-validate="'required|min:4'" v-model="eventName" prepend-icon="event"
@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import nanoid from 'nanoid';
 import { EventBus } from '../event-bus';
 
 export default {
@@ -59,6 +58,7 @@ export default {
     return {
       email: '',
       dialog: false,
+      id: '',
       eventName: '',
       description: '',
       duration: '',
@@ -71,16 +71,25 @@ export default {
   },
   mounted() {
     this.email = this.$cookies.get('authenticatedUser');
-    EventBus.$on('show-add-dialog', () => {
+    EventBus.$on('show-edit-dialog', (event) => {
       this.dialog = true;
+      this.id = event.id;
+      this.eventName = event.eventName;
+      this.description = event.description;
+      this.duration = event.duration;
+      this.location = event.location;
+      this.fees = event.fees;
+      this.tags = event.tags;
+      this.maxParticipants = event.maxParticipants;
+      this.fieldsRequired = event.fieldsRequired;
     });
   },
   methods: {
     saveEvent() {
       this.$validator.validateAll().then((result) => {
         if (result) {
-          const event = {
-            id: nanoid(),
+          const updatedEvent = {
+            id: this.id,
             eventName: this.eventName,
             description: this.description,
             duration: this.duration,
@@ -91,12 +100,11 @@ export default {
             fieldsRequired: this.fieldsRequired,
           };
           const user = this.$cookies.get(this.email);
-          if (!user.events) {
-            user.events = [];
-          }
-          user.events.push(event);
+          const index = user.events.indexOf(user.events.find(event => event.id === this.id));
+          user.events.splice(index, 1, updatedEvent);
           this.$cookies.set(this.email, JSON.stringify(user));
-          EventBus.$emit('show-success-snack', 'Event Added!');
+          EventBus.$emit('show-success-snack', 'Event Updated!');
+          EventBus.$emit('update-my-events');
           this.dialog = false;
         }
       });
