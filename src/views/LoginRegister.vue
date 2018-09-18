@@ -70,7 +70,7 @@ export default {
         if (result) {
           if (!this.$cookies.get(this.email)) {
             // Simulating cookies as remote Database
-            this.$cookies.set(this.email, this.password);
+            this.$cookies.set(this.email, JSON.stringify({ password: this.password }));
             this.$cookies.set('authenticatedUser', this.email);
             this.$router.push('/dashboard/myEvents');
           } else {

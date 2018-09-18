@@ -18,10 +18,21 @@ export default {
   },
   mounted() {
     EventBus.$on('show-error-snack', (message) => {
-      console.log(message);
       this.snackbarMessage = message;
       this.snackbar = true;
-      this.snackbarColor = 'red darken-3';
+      this.snackbarColor = 'error';
+    });
+
+    EventBus.$on('show-success-snack', (message) => {
+      this.snackbarMessage = message;
+      this.snackbar = true;
+      this.snackbarColor = 'success';
+    });
+
+    EventBus.$on('show-info-snack', (message) => {
+      this.snackbarMessage = message;
+      this.snackbar = true;
+      this.snackbarColor = 'info';
     });
   },
 };

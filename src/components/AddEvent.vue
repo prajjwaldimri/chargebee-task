@@ -7,9 +7,9 @@
           v-text-field(v-validate="'required|min:4'" v-model="eventName" prepend-icon="event"
           :error-messages="errors.collect('eventName')" label="Event Name" data-vv-name="eventName")
 
-          v-text-field(v-validate="'required|min:4'" v-model="description" prepend-icon="event_note"
+          v-textarea(v-validate="'required|min:4'" v-model="description" prepend-icon="event_note"
           :error-messages="errors.collect('description')" label="Description"
-            data-vv-name="description" textarea)
+            data-vv-name="description")
 
           v-text-field(v-validate="'required|min:4'" v-model="duration" prepend-icon="av_timer"
           :error-messages="errors.collect('duration')" label="Time Duration"
@@ -24,19 +24,22 @@
             data-vv-name="fees")
 
           v-text-field(v-validate="'required'" v-model="tags" prepend-icon="bookmarks"
-          :error-messages="errors.collect('tags')" label="Tags"
+          :error-messages="errors.collect('tags')" label="Tags (separated by commas)"
             data-vv-name="tags")
 
           v-text-field(v-validate="'required|numeric'" v-model="maxParticipants"
           prepend-icon="event_seat"
           :error-messages="errors.collect('maxParticipants')" label="Maximum Participants"
-            data-vv-name="maxParticipants")
+            data-vv-name="maxParticipants" type="number")
+
+          v-combobox(v-model="fieldsRequired" multiple chips
+          label="Fields required from registering users")
 
       v-divider
 
       v-card-actions
         v-spacer
-        v-btn(color="primary")
+        v-btn(color="primary" @click="saveEvent")
           v-icon.pr-2 save
           span Save
         v-btn(@click="dialog = false")
@@ -48,8 +51,12 @@
 import { EventBus } from '../event-bus';
 
 export default {
+  $_veeValidate: {
+    validator: 'new',
+  },
   data() {
     return {
+      email: '',
       dialog: false,
       eventName: '',
       description: '',
@@ -57,14 +64,41 @@ export default {
       location: '',
       fees: '',
       tags: '',
-      maxParticipants: 0,
-      fieldsRequired: [],
+      maxParticipants: 1,
+      fieldsRequired: ['Name'],
     };
   },
   mounted() {
+    this.email = this.$cookies.get('authenticatedUser');
     EventBus.$on('show-add-dialog', () => {
       this.dialog = true;
     });
+  },
+  methods: {
+    saveEvent() {
+      this.$validator.validateAll().then((result) => {
+        if (result) {
+          const event = {
+            eventName: this.eventName,
+            description: this.description,
+            duration: this.duration,
+            location: this.location,
+            fees: this.fees,
+            tags: this.tags,
+            maxParticipants: this.maxParticipants,
+            fieldsRequired: this.fieldsRequired,
+          };
+          const user = this.$cookies.get(this.email);
+          if (!user.events) {
+            user.events = [];
+          }
+          user.events.push(event);
+          this.$cookies.set(this.email, JSON.stringify(user));
+          EventBus.$emit('show-success-snack', 'Event Added!');
+          this.dialog = false;
+        }
+      });
+    },
   },
 };
 </script>
