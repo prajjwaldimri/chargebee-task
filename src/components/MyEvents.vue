@@ -64,9 +64,21 @@ export default {
   },
   methods: {
     deleteItem(itemId) {
-      const index = this.user.events.indexOf(this.user.events.find(event => event.id === itemId));
+      const event = this.user.events.find(item => item.id === itemId);
+      // Notify all participants of the change
+      event.participants.forEach((participant) => {
+        const participantDetails = this.$cookies.get(participant);
+        if (!participantDetails.notifications) {
+          participantDetails.notifications = [];
+        }
+        participantDetails.notifications.push(`${event.eventName} has been deleted.`);
+        this.$cookies.set(participant, participantDetails);
+      });
+
+      const index = this.user.events.indexOf(event);
       this.user.events.splice(index, 1);
       this.$cookies.set(this.email, JSON.stringify(this.user));
+
       EventBus.$emit('show-success-snack', 'Successfully Deleted');
       this.getEvents();
     },

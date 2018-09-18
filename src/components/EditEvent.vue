@@ -66,6 +66,7 @@ export default {
       fees: '',
       tags: '',
       maxParticipants: 1,
+      participants: [],
       fieldsRequired: ['Name'],
     };
   },
@@ -81,6 +82,7 @@ export default {
       this.fees = event.fees;
       this.tags = event.tags;
       this.maxParticipants = event.maxParticipants;
+      this.participants = event.participants;
       this.fieldsRequired = event.fieldsRequired;
     });
   },
@@ -97,12 +99,26 @@ export default {
             fees: this.fees,
             tags: this.tags,
             maxParticipants: this.maxParticipants,
+            participants: this.participants,
             fieldsRequired: this.fieldsRequired,
           };
           const user = this.$cookies.get(this.email);
-          const index = user.events.indexOf(user.events.find(event => event.id === this.id));
+          const event = user.events.find(item => item.id === this.id);
+          // First Notify all the participants of this change
+          event.participants.forEach((participant) => {
+            const participantDetails = this.$cookies.get(participant);
+            console.log(participantDetails);
+            if (!participantDetails.notifications) {
+              participantDetails.notifications = [];
+            }
+            participantDetails.notifications.push(`${event.eventName} has been modified.`);
+            this.$cookies.set(participant, participantDetails);
+          });
+          // Get the index of the vent and replace it with new modified event
+          const index = user.events.indexOf(event);
           user.events.splice(index, 1, updatedEvent);
           this.$cookies.set(this.email, JSON.stringify(user));
+
           EventBus.$emit('show-success-snack', 'Event Updated!');
           EventBus.$emit('update-my-events');
           this.dialog = false;
