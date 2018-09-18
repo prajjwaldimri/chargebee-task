@@ -1,5 +1,6 @@
 <template lang="pug">
   v-container(fluid grid-list-lg)
+    RegisterForEvent
     h1.headline All Events
 
     v-layout(row wrap).pt-5
@@ -49,8 +50,12 @@
 
 <script>
 import { EventBus } from '../event-bus';
+import RegisterForEvent from '../components/RegisterForEvent.vue';
 
 export default {
+  components: {
+    RegisterForEvent,
+  },
   data() {
     return {
       events: [],
@@ -60,19 +65,29 @@ export default {
   mounted() {
     this.currentUser = this.$session.get('authenticatedUser');
     this.getEvents();
+    EventBus.$on('refresh-all-events', () => {
+      this.getEvents();
+    });
   },
   methods: {
     register(userEmail, eventId) {
       const user = this.$cookies.get(userEmail);
 
-      const index = user.events.indexOf(user.events.find(event => event.id === eventId));
-      user.events[index].participants.push(this.currentUser);
-      // Check for duplicates
-      user.events[index].participants = Array.from(new Set(user.events[index].participants));
-      this.$cookies.set(userEmail, JSON.stringify(user));
-      this.getEvents();
+      const event = user.events.find(item => item.id === eventId);
+      // If event creator has not specified any fields to be filled on registration
+      // directly register user
+      if (event.fieldsRequired.length < 1) {
+        const index = user.events.indexOf(event);
+        user.events[index].participants.push(this.currentUser);
+        // Check for duplicates
+        user.events[index].participants = Array.from(new Set(user.events[index].participants));
+        this.$cookies.set(userEmail, JSON.stringify(user));
+        this.getEvents();
 
-      EventBus.$emit('show-success-snack', 'Successfully registered');
+        EventBus.$emit('show-success-snack', 'Successfully registered');
+      } else {
+        EventBus.$emit('register-for-event', event);
+      }
     },
     getEvents() {
       const users = JSON.parse(this.$cookies.get('users'));
